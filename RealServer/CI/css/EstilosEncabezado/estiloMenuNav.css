@@ -1,0 +1,31 @@
+*{
+	font-weight: bold;
+}
+
+body, html {
+	height: 100%;
+	font-family: Poppins-Regular, sans-serif;
+}
+
+nav{
+	background-color: #40B4D7;
+}
+
+a{
+	color: #333;
+}
+
+li>a:hover,
+li>a:focus{
+	background: skyblue;
+}
+
+#encabezado{
+	text-decoration: none;
+}
+
+@media screen and (max-width: 480px){
+	li>a:hover,
+	li>a:focus{
+	background: skyblue;
+}
