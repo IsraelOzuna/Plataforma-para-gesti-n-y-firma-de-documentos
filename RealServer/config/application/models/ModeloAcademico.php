@@ -27,7 +27,7 @@ class ModeloAcademico extends CI_Model {
         return $this->db->insert('Academico', $datos);
     }
 
-    public function obtenerDatos($correo){
+    public function obtenerDatosAcademico($correo){
         $this->db->where('correo', $correo);
         $datosAcademico = $this->db->get('academico');
         return $datosAcademico->result_array();
@@ -55,5 +55,15 @@ class ModeloAcademico extends CI_Model {
             $correoExistente = true;
         }
         return $correoExistente;
+    }
+
+
+    public function cambiarContrasena($academico){
+        $academico['nuevaContrasena'] = hash("sha256", $academico['nuevaContrasena']);
+        $nuevaContrasena = array(
+            'contrasena' => $academico['nuevaContrasena']
+        );
+        $this->db->where('correo', $academico['correo']);
+        return $this->db->update('Academico', $nuevaContrasena);
     }
 }

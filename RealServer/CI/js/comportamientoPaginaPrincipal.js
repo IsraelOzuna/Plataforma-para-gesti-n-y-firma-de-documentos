@@ -1,19 +1,13 @@
 $(function(){
+
+  var base_url = window.location.origin;
   $('input#buscar').quicksearch('table tbody tr');
 
-
-  $('#editar').click(function(){
-   var children = $(this).children().eq(0).text();
-   window.location.href = "<?php echo base_url();?>index.php/ControladorEditor/abrirDocumento/"+ children;
-
+  $('.editar').click(function(){ 
+      var nombreDocumento = $(this).parents("tr").find('td:first-child').text().trim();
+      nombreDocumento = encodeURIComponent(btoa(nombreDocumento));
+      window.location.href = base_url + "/RealServer/index.php/ControladorEditor/abrirDocumento/"+ nombreDocumento;
    });
-      				 //Es para seleccionar una fila de la tabla y obtener los datos
-      				 /*$("tr").click(function(){
-      				 	var children = $(this).children().eq(1).text();
-      				 	window.location.href = "<?php //echo base_url();?>index.php/ControladorEditor/abrirDocumento/" + children;
-
-      				 });*/
-
 
    $(".btnFlotante").click(function(e){
       e.preventDefault();
@@ -24,13 +18,48 @@ $(function(){
       });      
    });
 
+   $(".firmar").click(function(e){
+      e.preventDefault();
+      $nombreArchivo = $(this).parents("tr").find('td:first-child').text().trim();
+       $('#documentoFirmar').html($nombreArchivo);
+      $.ajax({                      
+         success: function(response){           
+            $("#modalFirmar").modal("show");
+         }
+      });      
+   });
+
+   $("#botonFirmar").click(function(e){ 
+      e.preventDefault();  
+      var nombreDocumento = $("#documentoFirmar").text().trim();
+      $.ajax({
+        type: "POST",
+         url: base_url + "/RealServer/index.php/ControladorPaginaPrincipal/firmarPDF",                             
+         data: {'nombreArchivo': nombreDocumento
+         },                      
+         success: function(response){     
+            if(response == "firmaExitosa"){
+              alert("Firma exitosa");
+              window.location.href = base_url + "/RealServer/index.php/ControladorPaginaPrincipal/index";
+            }else{
+              alert("Ocurrió un problema al firmar, intente de nuevo");
+            }
+         }
+      });   
+   }); 
+
+ 
+
+   $("#botonCancelarFirma").click(function(e){
+      e.preventDefault();
+      $("#modalFirmar").modal("hide");
+  
+   }); 
+
    $(".btnCompartir").click(function(e){
       e.preventDefault();
-
-    
        $nombreArchivo = $(this).parents("tr").find('td:first-child').text().trim();
        $('#nombreDocumento').html($nombreArchivo);
-          console.log($nombreArchivo);
       $.ajax({                      
          success: function(response){           
             $("#modalCompartir").modal("show");
@@ -44,7 +73,7 @@ $(function(){
       var nombreArchivo = $('#nombreDocumento').text().trim();
       $.ajax({                   
          type: "POST",
-         url: "http://localhost/RealServer/index.php/ControladorPaginaPrincipal/compartirArchivo",                             
+         url: base_url + "/RealServer/index.php/ControladorPaginaPrincipal/compartirArchivo",                             
          data: {'correo': correo,
          'nombreArchivo': nombreArchivo
          },
@@ -55,51 +84,36 @@ $(function(){
       });      
    });   
 
-   $(".btnRegistrar").click(function(e){              
-      e.preventDefault();
-      var correo = $("#correo").val();
-      var claveGenerada = Math.round(Math.random() * (10000 - 1000) + 1000);
-      $.ajax({                   
-         type: "POST",
-         url: "http://localhost/RealServer/index.php/ControladorRegistrar/enviarCorreo",                             
-         data: {'correo': correo,                              
-               'claveGenerada': claveGenerada
-         },
-         success: function(response){              
-            $("#modalRegistro").modal("show");
-            $("#btnConfirmar").click(function(e){              
-               if($("#claveConfirmacion").val() == claveGenerada){
-                  registrarAcademico();               
-               }else{
-                  alert("La clave no coincide");
-               }
-            });                                    
-         }
-      });      
-   });
-
    
+   $(".descargar").click(function(e){
+     e.preventDefault();
+     var nombreDocumento = $(this).parents("tr").find('td:first-child').text().trim();
+     $('#documentoDescargar').html(nombreDocumento);
+     $("#modalDescargar").modal("show");
+  });
 
-   function registrarAcademico() {        
-      var nombre = $("#nombre").val();
-      var apellidos = $("#apellidos").val();
-      var correo = $("#correo").val();
-      var telefono = $("#telefono").val();
-      var contrasena = $("#contrasena").val();        
-      
-      $.ajax({
-         type: "POST",
-         url: "http://localhost/RealServer/index.php/ControladorRegistrar/registrarAcademico",
-         data: {'nombre': nombre,
-               'apellidos': apellidos,
-               'correo': correo,
-               'telefono': telefono,
-               'contrasena': contrasena
-            },
-            success: function(response){                          
-               alert("Registro correctamente realizado");  
-               window.location.href = "http://localhost/RealServer/"                            
-            }
-        });
-   }  
+
+   $("#botonPDF").click(function(e){
+         var nombreDocumento = $("#documentoDescargar").text().trim();
+         var tipoDocumento = encodeURIComponent(btoa('propio'));
+         nombreDocumento = encodeURIComponent(btoa(nombreDocumento));
+         window.open(base_url + '/RealServer/index.php/ControladorPaginaPrincipal/descargarPDF/' + nombreDocumento + '/' + tipoDocumento);
+
+      });
+
+   $("#botonWORD").click(function(e){
+
+      var nombreDocumento = $("#documentoDescargar").text().trim();
+      nombreDocumento = encodeURIComponent(btoa(nombreDocumento));
+      window.open(base_url + '/RealServer/index.php/ControladorPaginaPrincipal/descargarWord/' + nombreDocumento);
+    
+ }); 
+
+   $(".descargarCargado").click(function(e){
+     e.preventDefault();
+     var tipoDocumento = encodeURIComponent(btoa('cargado'));
+     var nombreDocumento = $(this).parents("tr").find('td:first-child').text().trim();
+     nombreDocumento = encodeURIComponent(btoa(nombreDocumento));
+     window.open(base_url + '/RealServer/index.php/ControladorPaginaPrincipal/descargarPDF/' + nombreDocumento + '/' + tipoDocumento);
+  });
 });	

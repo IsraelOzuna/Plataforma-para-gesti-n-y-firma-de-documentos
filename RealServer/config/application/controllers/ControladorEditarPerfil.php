@@ -11,17 +11,18 @@ class ControladorEditarPerfil extends CI_Controller {
     {
         if($this->session->userdata('correo') != ''){  
             $correo = $this->session->userdata('correo');
-            $datosAcademico = $this->ModeloAcademico->obtenerDatos($correo);                             
+            $datosAcademico = $this->ModeloAcademico->obtenerDatosAcademico($correo);                             
             $academico['nombre'] =  $this->session->userdata('nombre') ;        
             $this->load->view('Encabezado', $academico);       
-            $this->load->view('EditarPerfil', $datosAcademico[0]);
+            $this->load->view('VistaEditarPerfil', $datosAcademico[0]);
         }else{
-            $this->load->view('IniciarSesion');        
+            $this->load->view('VistaIniciarSesion');        
         }             
     }  
 
     public function editarAcademico()
     {
+        if($this->session->userdata('correo') != ''){  
         $this->load->helper('form');
         $this->load->library('form_validation');
 
@@ -47,5 +48,8 @@ class ControladorEditarPerfil extends CI_Controller {
             $this->ModeloAcademico->editarAcademico($datosAcademico);
             redirect('ControladorPaginaPrincipal/index');           
         }
+        }else{
+        redirect('ControladorIniciarSesion/index');        
+      } 
     }
 } 

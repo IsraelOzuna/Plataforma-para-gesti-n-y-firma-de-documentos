@@ -1,4 +1,5 @@
 $(function(){
+	var base_url = window.location.origin;
 	$("tr").click(function(){
 		$("#receptorForm").val($(this).children().eq(0).text().trim());
 		$("#modalMensaje").modal("show");
@@ -10,14 +11,14 @@ $(function(){
 		e.preventDefault();
 		$.ajax({
 			type: "POST",
-			url: "http://localhost/RealServer/index.php/ControladorMensajes/enviarMensaje", 
+			url: base_url + "/RealServer/index.php/ControladorMensajes/enviarMensaje", 
 			data: {
 				'receptor': receptor,
 				'mensaje': mensaje
 			},
 			success: function(response){
 				alert("Mensaje Enviado");
-				window.location.href = "http://localhost/RealServer/index.php/ControladorMensajes/index";
+				window.location.href = base_url + "/RealServer/index.php/ControladorMensajes/index";
 			}
 		});
 	});
@@ -35,7 +36,7 @@ $(function(){
 		e.preventDefault();
 		$.ajax({
 			type: "POST",
-			url: "http://localhost/RealServer/index.php/ControladorMensajes/enviarNuevoMensaje", 
+			url: base_url + "/RealServer/index.php/ControladorMensajes/enviarNuevoMensaje", 
 			data: {
 				'receptor': receptor,
 				'mensaje': mensaje
@@ -43,7 +44,7 @@ $(function(){
 			success: function(response){
 				if(response == "guardado"){
 					alert("Mensaje Enviado");
-					window.location.href = "http://localhost/RealServer/index.php/ControladorMensajes/index";
+					window.location.href = base_url + "/RealServer/index.php/ControladorMensajes/index";
 				}else{
 					alert("El correo no se encuentra registrado");	
 				}

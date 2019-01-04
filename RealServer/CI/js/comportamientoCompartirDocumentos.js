@@ -1,39 +1,41 @@
 $(function(){
-	$(document).ready( function () {
-   	$('input#buscar').quicksearch('table tbody tr');
-           		
-	  
-      $('.nombre').click(function(){
-        var listaDocumentos = JSON.parse(JSON.stringify(listaphp));
-        var nombreArchivo = $(this).parents("tr").find('td:eq(1)').text().trim();
-        var correo = $(this).parents("tr").find('td:eq(3)').text().trim();
+	 var base_url = window.location.origin;
+		$('input#buscar').quicksearch('table tbody tr');
 
-         var idRemitente = "";
-         for (var i = 0; i < listaDocumentos.length; i++) {
-            //alert("i: " + i);
-
-            if(listaDocumentos[i]['nombreArchivo'].trim() == nombreArchivo && listaDocumentos[i]['correo'].trim() == correo){
-               idRemitente = listaDocumentos[i]['idRemitente'];
-               break;
-            }
-         }  
+		$(".descargar").click(function(e){
+			e.preventDefault();
+			var nombreDocumento = $(this).parents("tr").find('td:first-child').text().trim();
+			var correo = $(this).parents("tr").find('td:eq(2)').text().trim();
+			$('#documentoDescargar').html(nombreDocumento);
+			$('#correoDescargar').html(correo);
+			$("#modalDescargar").modal("show");
+		});
 
 
-          $.ajax({                   
-                  type: "POST",
-                  url: "http://localhost/RealServer/index.php/ControladorDocumentosCompartidos/abrirArchivo",                             
-                  data: {'idRemitente': idRemitente,                              
-                  'nombreArchivo': nombreArchivo
-                  },
-                  success: function(response){  
-                        alert(response);        
-                    // var blob=new Blob([response]);
+		$("#botonPDF").click(function(e){
 
-                    /*var file = new Blob([response], {type: 'application/pdf'});
-                     var fileURL = URL.createObjectURL(file);*/
-                     window.open(response);             
-                  }
-               });                
-      });
-	});
+			var nombreDocumento = $("#documentoDescargar").text();
+			var correo = $("#correoDescargar").text().trim();
+			correo = encodeURIComponent(btoa(correo));
+			nombreDocumento = encodeURIComponent(btoa(nombreDocumento));
+			window.open(base_url + '/RealServer/index.php/ControladorDocumentosCompartidos/descargarPDF/' + correo + '/' + nombreDocumento);
+
+		});
+
+		$("#botonWORD").click(function(e){
+			var correo = $("#correoDescargar").text().trim();
+			correo = encodeURIComponent(btoa(correo));
+			var nombreDocumento = $("#documentoDescargar").text().trim();
+			nombreDocumento = encodeURIComponent(btoa(nombreDocumento));
+			window.open(base_url + '/RealServer/index.php/ControladorDocumentosCompartidos/descargarWord/' + correo + '/' + nombreDocumento);
+
+		}); 
+
+		$('.editar').click(function(){ 
+			var nombreDocumento = $(this).parents("tr").find('td:first-child').text().trim();
+			var correo = $(this).parents("tr").find('td:eq(2)').text().trim();
+			correo = encodeURIComponent(btoa(correo));
+			nombreDocumento = encodeURIComponent(btoa(nombreDocumento));
+			window.location.href = base_url + '/RealServer/index.php/ControladorEditor/abrirDocumentoCompartido/' + correo + '/' + nombreDocumento;
+		});
 });	
